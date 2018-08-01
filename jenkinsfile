@@ -1,28 +1,29 @@
 pipeline {
-	agent any
-	stages {
-		stage ('Cleanup') {
-			steps {
-				deleteDir()
-			}
-		}
-		
-		stage ('Checkout SCM') {
-			steps {
-				checkout([$class: 'GitSCM', 
-  				branches: [[name: 'develop']], 
-			    doGenerateSubmoduleConfigurations: false, 
-    			extensions: [[$class: 'CleanCheckout']], 
-			    submoduleCfg: [], 
-			    userRemoteConfigs: [[credentialsId: '	openkerala-github', url: 'git@github.com:openkerala/react-app.git']]
-				])
-			}
-		}
-		
-		stage ('NPM install') {
-			steps {
-				sh '''cd test-app && npm install'''
-			}
-		}
-	}
+    agent any
+    stages {
+        stage ('Cleanup') {
+            steps {
+                deleteDir()
+            }
+        }
+
+        stage ('Checkout SCM') {
+            steps {
+                checkout([$class: 'GitSCM',
+                branches: [[name: 'develop']],
+                doGenerateSubmoduleConfigurations: false,
+                extensions: [[$class: 'CleanCheckout']],
+                submoduleCfg: [],
+                userRemoteConfigs: [[credentialsId: 'jenkins-github', url: 'https://github.com/openkerala/react-app.git']]
+                ])
+            }
+        }
+
+        stage ('NPM install') {
+            steps {
+                sh '''cd test-app && npm install'''
+            }
+        }
+    }
 }
+
