@@ -1,0 +1,42 @@
+pipeline {
+  agent any
+  stages {
+    stage ('Cleanup') {
+      steps {
+        deleteDir()
+      }
+    }
+
+    stage ('Notify Slack') {
+      steps {
+        slackSend channel: "#jenkins", message: "Build Started: ${env.JOB_NAME} ${env.BUILD_NUMBER}"
+      }
+    }
+
+    stage ('Checkout SCM') {
+      steps {
+        checkout([$class: 'GitSCM',
+        branches: [[name: 'develop']],
+        doGenerateSubmoduleConfigurations: false,
+        extensions: [[$class: 'CleanCheckout']],
+        submoduleCfg: [],
+        userRemoteConfigs: [[credentialsId: 'jenkins-github', url: 'https://github.com/openkerala/react-app.git']]
+        ])
+      }
+    }
+
+    stage ('NPM install') {
+      agent {
+        docker {
+          image 'node:8.11.3-alpine'
+          args '-v ${WORKSPACE}/sample/test-app:/opt -u root'
+          reuseNode true
+        }
+      }
+      steps {
+        sh '''ls -ltr'''
+        sh '''cd sample/test-app && npm install'''
+      }
+    }
+  }
+}
