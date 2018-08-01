@@ -74,12 +74,14 @@ pipeline {
       agent {
         docker {
           image 'node:8.11.3-alpine'
+          args '-v /var/www/html:/opt'
           reuseNode true
           label 'npm-sample'
         }
       }
       steps {
-        sh '''cp -R sample/test-app/build/* /var/www/html/'''
+        sh '''cd /opt && rm -rvf *'''
+        sh '''cp -R sample/test-app/build/* /opt/'''
       }
     }
 
