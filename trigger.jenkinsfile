@@ -31,12 +31,38 @@ pipeline {
           image 'node:8.11.3-alpine'
           args '-v ${WORKSPACE}/sample/test-app:/opt -u root'
           reuseNode true
+          label 'npm-sample'
         }
       }
       steps {
         sh '''ls -ltr'''
         sh '''cd sample/test-app && npm install'''
       }
+    }
+
+    stage ('NPM Build') {
+      agent {
+        docker {
+          image 'node:8.11.3-alpine'
+          args '-v ${WORKSPACE}/sample/test-app:/opt -u root'
+          reuseNode true
+          label 'npm-sample'
+        }
+      }
+      steps {
+        sh '''ls -ltr sample/test-app '''
+      }
+    }
+  }
+  post {
+    failure {
+      slackSend channel: "#jenkins", message: "Build Failed: ${env.JOB_NAME} ${env.BUILD_NUMBER}"
+    }
+    success {
+      slackSend channel: "#jenkins", message: "Build Success: ${env.JOB_NAME} ${env.BUILD_NUMBER}"
+    }
+    always {
+      cleanWs()
     }
   }
 }
