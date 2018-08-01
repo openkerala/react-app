@@ -32,6 +32,7 @@ pipeline {
       agent {
         docker {
           image 'node:8.11.3-alpine'
+          args '-u root'
           reuseNode true
           label 'npm-sample'
         }
@@ -59,6 +60,7 @@ pipeline {
       agent {
         docker {
           image 'node:8.11.3-alpine'
+          args '-u root'
           reuseNode true
           label 'npm-sample'
         }
